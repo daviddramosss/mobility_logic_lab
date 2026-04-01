@@ -4,6 +4,8 @@ import (
 	"fmt"      //Para imprimir por consola
 	"log"      //Para manejar errores
 	"net/http" //Para manejar peticiones HTTP
+	// Importamos nuestro paquete handler
+	"mobility_logic_lab/ingestion/internal/handler"
 )
 
 func main() {
@@ -17,6 +19,9 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status": "ok", "service": "ingestion"}`))
 	})
+
+	// Registrar la ruta para recibir localizaciones y procesarlas usando nuestro handler
+	http.HandleFunc("/location", handler.HandleLocation)
 
 	//3. Mensaje para dar feedback
 	fmt.Printf("Ingestion Service arrancando en el puerto %s...\n", port)
