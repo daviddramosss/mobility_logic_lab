@@ -1,23 +1,27 @@
+# ==========================================
+# PARTE 1: CONFIGURACIÓN E INFRAESTRUCTURA
+# ==========================================
 # Importamos la librería json para manejar los datos
 require 'json'
 # Importamos Sinatra
 require 'sinatra'
 
-# Configuramos Sinatra para que escuche en todas las interfaces de red (necesario para Docker)
+# Configuramos el servidor para Docker y le asignamos el puerto 3000
 set :bind, '0.0.0.0'
 # Definimos el puerto en el que correrá (el 3000 es el estándar en Ruby)
 set :port, 3000
 
-# Endpoint de Healthcheck (igual que hicimos en Go)
-# Fíjate en la sintaxis: "get '/ruta' do ... end"
+# Endpoint de Healthcheck (igual que en Go)
+# sintaxis: "get '/ruta' do ... end"
 get '/health' do
   # Indicamos que la respuesta será un JSON
   content_type :json
-  
-  # En Ruby, la última línea de un bloque se devuelve (return) automáticamente.
-  # El método .to_json convierte un diccionario (Hash en Ruby) a texto JSON.
   { status: 'ok', service: 'pricing' }.to_json
 end
+
+# ==========================================
+# PARTE 2: LÓGICA DE NEGOCIO (DYNAMIC PRICING)
+# ==========================================
 
 # NUEVO ENDPOINT: POST /fare
 # Recibe los datos del viaje y calcula el precio dinámico
