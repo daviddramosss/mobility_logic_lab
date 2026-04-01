@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # Definimos nuestro primer microservicio
+  ingestion:
+    # Le decimos dónde están los archivos para construir la imagen
+    build:
+      context: ./services/ingestion
+      dockerfile: Dockerfile
+    # Mapeamos los puertos: "puerto_de_mi_pc : puerto_del_contenedor"
+    ports:
+      - "8080:8080"
+    # Opcional: Le pasamos variables de entorno
+    environment:
+      - ENV=development
