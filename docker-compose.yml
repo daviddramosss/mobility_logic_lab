@@ -24,3 +24,15 @@ services:
       - "3000:3000"
     environment:
       - ENV=development
+
+  # ----------------------------------------
+  # 3. Servicio de Emparejamiento (Elixir)
+  # ----------------------------------------
+  matching:
+    build:
+      context: ./services/matching
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - ENV=development
