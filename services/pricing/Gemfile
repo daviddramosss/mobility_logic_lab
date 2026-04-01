@@ -1,0 +1,12 @@
+# Le decimos de dónde descargar las librerías (el repositorio oficial)
+source 'https://rubygems.org'
+
+# Definimos la versión de Ruby que usaremos (esto lo leerá Docker luego)
+ruby '3.2.2'
+
+# Importamos Sinatra, nuestro micro-framework web
+gem 'sinatra'
+# Importamos un servidor web ligero para que Sinatra funcione bien
+gem 'puma'
+
+gem 'rackup'

@@ -1,15 +1,26 @@
 version: '3.8'
 
 services:
-  # Definimos nuestro primer microservicio
+  # ----------------------------------------
+  # 1. Servicio de Ingesta (Go)
+  # ----------------------------------------
   ingestion:
-    # Le decimos dónde están los archivos para construir la imagen
     build:
       context: ./services/ingestion
       dockerfile: Dockerfile
-    # Mapeamos los puertos: "puerto_de_mi_pc : puerto_del_contenedor"
     ports:
       - "8080:8080"
-    # Opcional: Le pasamos variables de entorno
+    environment:
+      - ENV=development
+
+  # ----------------------------------------
+  # 2. Servicio de Precios (Ruby)
+  # ----------------------------------------
+  pricing:
+    build:
+      context: ./services/pricing
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     environment:
       - ENV=development
