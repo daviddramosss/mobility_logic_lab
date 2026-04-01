@@ -11,6 +11,9 @@ set :bind, '0.0.0.0'
 # Definimos el puerto en el que correrá (el 3000 es el estándar en Ruby)
 set :port, 3000
 
+# DESACTIVAMOS EL ESCUDO: Permitimos tráfico interno de la red de Docker
+set :host_authorization, { permitted_hosts: [] }
+
 # Endpoint de Healthcheck (igual que en Go)
 # sintaxis: "get '/ruta' do ... end"
 get '/health' do
