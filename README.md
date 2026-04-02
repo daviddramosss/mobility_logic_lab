@@ -79,7 +79,7 @@ Para ver la arquitectura en pleno funcionamiento, abre una nueva pestaña en tu 
 ```
 # Si no tienes requests instalado: pip install requests
 # Una vez instalado ejecuta:
-    python3 simular_trafico.py
+    python3 simulador_trafico.py
 ```
 
 Podrás observar en la terminal de Docker cómo los tres microservicios registran en tiempo real el flujo de la petición: `Go (Gateway) -> Elixir (Orquestador) -> Ruby (Pricing) -> Respuesta`.
