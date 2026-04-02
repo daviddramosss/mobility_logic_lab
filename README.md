@@ -41,15 +41,15 @@ Cada servicio se puede desplegar de forma independiente y se comunica a través 
 
 ## Servicios
 
-### 1. Ingestion Service — Go (`:8080`)
+### 1. Ingestion Service — Go (:8080)
 Actúa como la puerta de entrada (API Gateway) del sistema. Recibe las peticiones de los usuarios y las reenvía al servicio correspondiente.
 Go es un sistema de baja latencia, modelo de concurrencia sólido y consumo mínimo de memoria, ideal para la capa de ingesta en sistemas con alto volumen de tráfico concurrente.
 
-### 2. Matching Service — Elixir (`:4000`)
+### 2. Matching Service — Elixir (:4000)
 Actúa como el orquestador principal. Recibe la petición, genera un emparejamiento con un conductor disponible (simulado), y consulta los precios antes de devolver la respuesta final al usuario.
 
 
-### 3. Pricing Service — Ruby (`:3000`)
+### 3. Pricing Service — Ruby (:3000)
 Recibe los datos del viaje (distancia, tiempo, multiplicador de demanda) y devuelve una tarifa dinámica calculada al instante.
 Ruby tiene una sintaxis altamente expresiva y natural, ideal para traducir reglas de negocio complejas en código fácil de leer y mantener.
 
