@@ -23,12 +23,14 @@ try:
                 data = response.json()
                 precio = data['pricing']['tarifa_final']
                 conductor = data['driver_id']
-                print(f"✅ ÉXITO: Conductor {conductor} asignado. Precio: {precio}€")
+                distancia = data['trip_details']['distance_km']
+                demanda = data['trip_details']['demand_factor'] 
+                print(f"✅ ÉXITO: {conductor} asignado | Distancia: {distancia}km | Demanda: {demanda}x | Precio: {precio}€")
             else:
                 print(f"❌ ERROR: El sistema respondió con código {response.status_code}")
                 
         except Exception as e:
-            print(f"💥 FALLO DE RED: {e}")
+            print(f"FALLO DE RED: {e}")
 
         # Esperamos 2 segundos entre peticiones para que se vean bien los logs
         time.sleep(2)
