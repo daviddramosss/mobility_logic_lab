@@ -1,8 +1,8 @@
 # Mobility Logic Lab 🚖
 
-Una prueba de concepto (PoC) de microservicios políglota que simula el motor logístico principal de una plataforma de transporte compartido (ride-hailing). Construido para explorar el diseño de sistemas distribuidos utilizando **Go, Elixir y Ruby** — el stack principal de Cabify.
+Una prueba de concepto (PoC) de microservicios que simula el motor logístico principal de una plataforma de transporte compartido. Construido para explorar el diseño de sistemas distribuidos utilizando **Go, Elixir y Ruby** — el stack principal de Cabify.
 
-Este proyecto es intencionadamente simple. El objetivo no es tener todas las funcionalidades, sino demostrar razonamiento arquitectónico, principios de código limpio y la capacidad de entender sistemas distribuidos a través de múltiples lenguajes de ejecución.
+Este proyecto es intencionadamente simple. El objetivo no es tener todas las funcionalidades, sino demostrar razonamiento arquitectónico, principios de código limpio y la capacidad de entender sistemas distribuidos a través de múltiples lenguajes de ejecución. 
 
 ### Resumen de la Arquitectura
 
@@ -36,7 +36,7 @@ Este proyecto es intencionadamente simple. El objetivo no es tener todas las fun
           │   (demanda × distancia) │
           └─────────────────────────┘
 ```
-    
+
 Cada servicio se puede desplegar de forma independiente y se comunica a través de HTTP sobre la red interna de Docker. Esto refleja una versión simplificada del diseño backend real de una aplicación de movilidad, donde la ingesta, la orquestación y la lógica de negocio son responsabilidades separadas.
 
 ## Servicios
