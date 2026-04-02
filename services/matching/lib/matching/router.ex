@@ -47,7 +47,11 @@ defmodule Matching.Router do
               status: "confirmed",
               message: "Conductor asignado con éxito",
               driver_id: "driver-#{driver_id}", # El ID que nos dio el Dispatcher
-              trip_details: %{distance_km: distance, duration_min: duration},
+              trip_details: %{
+                distance_km: distance,
+                duration_min: duration,
+                demand_factor: demand
+              },
               pricing: pricing_data
             }
 

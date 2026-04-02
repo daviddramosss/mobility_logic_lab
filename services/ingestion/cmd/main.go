@@ -40,7 +40,7 @@ func main() {
 
 		// Enviamos la respuesta final al usuario
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(resp.StatusCode) //Envio el código de estado real que dio Elixir (200, 202, etc.)
 		w.Write(body)
 
 		log.Println("Go: Ciclo completo finalizado. Respuesta enviada al cliente.")

@@ -25,7 +25,7 @@ try:
                 precio = data['pricing']['tarifa_final']
                 conductor = data['driver_id']
                 distancia = data['trip_details']['distance_km']
-                demanda = data['pricing'].get('demand_factor', 'N/A')
+                demanda = data['trip_details'].get('demand_factor', 'N/A')
                 print(f"✅ ÉXITO: {conductor} asignado | Distancia: {distancia}km | Demanda: {demanda}x | Precio: {precio}€")
             
             elif response.status_code == 202: # Manejamos el caso de que estemos en la cola de Elixir   
@@ -38,8 +38,8 @@ try:
         except Exception as e:
             print(f"FALLO DE RED: {e}")
 
-        # Esperamos entre 4 y 10 segundos para pedir un viaje
-        tiempo_espera = random.randint(4, 10)   
+        # Esperamos entre 1 y 3 segundos para estresar al sistema 
+        tiempo_espera = random.uniform(1, 3)   
         print(f"Esperando {tiempo_espera} segundos para la siguiente petición...\n")
         time.sleep(tiempo_espera)
 

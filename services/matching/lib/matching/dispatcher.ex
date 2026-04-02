@@ -93,7 +93,7 @@ defmodule Matching.Dispatcher do
     # Usamos Task.start para lanzar un proceso independiente en background.
     # Así el Dispatcher queda libre instantáneamente para recibir más peticiones.
     Task.start(fn ->
-      travel_time = Enum.random(2000..15000) # El viaje dura entre 2 y 15 segundos
+      travel_time = Enum.random(5000..15000) # El viaje dura entre 5 y 15 segundos
 
       IO.puts("🚕 [VIAJE INICIADO] Conductor #{driver_id} asignado a Cliente #{customer_id} (Duración estimada: #{div(travel_time, 1000)}s)")
 
