@@ -10,6 +10,9 @@ defmodule Matching.Application do
     # 'children' es una lista de todos los procesos (trabajadores) que queremos
     # que nuestro Supervisor vigile desde el momento en que arranca la app.
     children = [
+      # 1. Levantamos el Dispatcher (GenServer) para gestionar conductores y colas.
+      # Al estar aquí, si el Dispatcher falla, el Supervisor lo reiniciará automáticamente.
+      Matching.Dispatcher,
       # Aquí le decimos que levante el servidor web (Cowboy) usando Plug.
       # Le indicamos que el esquema es HTTP, que el módulo que manejará las rutas
       # se llamará Matching.Router, y que escuche en el puerto 4000.
