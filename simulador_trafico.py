@@ -59,7 +59,7 @@ try:
             print(f"FALLO DE PROCESAMIENTO: {e}")
 
         # ESTRÉS 
-        tiempo_espera = random.uniform(1, 3)   
+        tiempo_espera = random.uniform(0.5, 1)   
         time.sleep(tiempo_espera)
 
 except KeyboardInterrupt:
