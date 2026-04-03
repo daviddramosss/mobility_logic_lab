@@ -14,7 +14,14 @@ def esperar_viaje_en_cola(num_viaje, customer_id):
             res = requests.get(f"{STATUS_URL}?id={customer_id}")
             if res.status_code == 200:
                 data = res.json()
-                print(f"\n🎉 ¡ACTUALIZACIÓN! El Viaje #{num_viaje} acaba de salir de la cola -> {data['driver_id']} ha sido asignado.\n")
+                conductor = data.get('driver_id', 'Desconocido')
+                
+                # Leemos los datos que Elixir acaba de calcular
+                precio = data.get('pricing', {}).get('tarifa_final', 'N/A')
+                distancia = data.get('trip_details', {}).get('distance_km', 'N/A')
+                demanda = data.get('trip_details', {}).get('demand_factor', 'N/A')
+                
+                print(f"\n🎉 ¡ACTUALIZACIÓN! El Viaje #{num_viaje} sale de la cola -> {conductor} | Distancia: {distancia}km | Demanda: {demanda}x | Precio: {precio}\n")
                 break # Terminamos el hilo
             elif res.status_code != 202:
                 break # Si da error o 404, terminamos

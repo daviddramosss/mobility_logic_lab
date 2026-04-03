@@ -86,14 +86,47 @@ defmodule Matching.Router do
   get "/match/:id" do
     case Matching.Dispatcher.check_status(id) do
       {:assigned, driver_id} ->
-        send_resp(conn, 200, Jason.encode!(%{status: "confirmed", driver_id: "driver-#{driver_id}"}))
+        # El conductor se acaba de liberar. Generamos los datos del viaje AHORA.
+        distance = Float.round(:rand.uniform() * 18.0 + 2.0, 2)
+        duration = Float.round(distance * Enum.random(2..4), 1)
+        demand = Enum.random([1.0, 1.2, 1.5, 2.0])
+
+        payload = Jason.encode!(%{
+          distance_km: distance,
+          duration_min: duration,
+          demand_factor: demand
+        })
+
+        url = "http://pricing:3000/fare"
+        headers = [{"Content-Type", "application/json"}]
+
+        # Preguntamos a Ruby por el precio
+        case HTTPoison.post(url, payload, headers) do
+          {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+            pricing_data = Jason.decode!(body)
+
+            # Construimos la respuesta completa
+            respuesta = %{
+              status: "confirmed",
+              driver_id: "driver-#{driver_id}",
+              trip_details: %{
+                distance_km: distance,
+                demand_factor: demand
+              },
+              pricing: pricing_data
+            }
+            send_resp(conn, 200, Jason.encode!(respuesta))
+
+          _ ->
+            send_resp(conn, 500, Jason.encode!(%{error: "Error contactando a Pricing desde la cola"}))
+        end
+
       :queued ->
         send_resp(conn, 202, Jason.encode!(%{status: "queued"}))
       :not_found ->
         send_resp(conn, 404, Jason.encode!(%{error: "Viaje finalizado o no existe"}))
+    end
   end
-end
-
 # ==========================================
   # RUTAS NO ENCONTRADAS (Catch-all)
   # ==========================================
