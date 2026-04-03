@@ -67,6 +67,7 @@ defmodule Matching.Router do
       {:queued, position} ->
         respuesta_espera = %{
           status: "queued",
+          customer_id: customer_id,
           message: "Todos nuestros conductores están realizando otros trayectos.",
           queue_position: position,
           estimated_wait: "Te avisaremos en cuanto un conductor quede libre."
@@ -79,6 +80,23 @@ defmodule Matching.Router do
     end
   end
 
+  # ==========================================
+  # Endpoint para consultar el estado (Polling)
+  # ==========================================
+  get "/match/:id" do
+    case Matching.Dispatcher.check_status(id) do
+      {:assigned, driver_id} ->
+        send_resp(conn, 200, Jason.encode!(%{status: "confirmed", driver_id: "driver-#{driver_id}"}))
+      :queued ->
+        send_resp(conn, 202, Jason.encode!(%{status: "queued"}))
+      :not_found ->
+        send_resp(conn, 404, Jason.encode!(%{error: "Viaje finalizado o no existe"}))
+  end
+end
+
+# ==========================================
+  # RUTAS NO ENCONTRADAS (Catch-all)
+  # ==========================================
   match _ do
     send_resp(conn, 404, "Ruta no encontrada")
   end

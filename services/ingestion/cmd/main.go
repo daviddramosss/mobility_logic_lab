@@ -16,7 +16,7 @@ func main() {
 		w.Write([]byte(`{"status": "ok", "service": "ingestion"}`))
 	})
 
-	// 2. NUEVO ENDPOINT: /request-ride
+	// 2. ENDPOINT PRINCIPAL: /request-ride
 	// Este es el punto de entrada para que el usuario pida un Cabify
 	http.HandleFunc("/request-ride", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Go: Solicitud de viaje recibida. Contactando con el Orquestador (Elixir)...")
@@ -40,13 +40,38 @@ func main() {
 
 		// Enviamos la respuesta final al usuario
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(resp.StatusCode) //Envio el código de estado real que dio Elixir (200, 202, etc.)
+		w.WriteHeader(resp.StatusCode) // Envio el código de estado real que dio Elixir (200, 202, etc.)
 		w.Write(body)
 
-		log.Println("Go: Ciclo completo finalizado. Respuesta enviada al cliente.")
+		log.Println("Go: Ciclo de petición finalizado. Respuesta enviada al cliente.")
 	})
 
-	fmt.Printf(" Ingestion Service (Go) escuchando en el puerto %s...\n", port)
+	// =========================================================================
+	// 3. ENDPOINT: Consultar estado de la cola (Polling Asíncrono)
+	// =========================================================================
+	http.HandleFunc("/ride-status", func(w http.ResponseWriter, r *http.Request) {
+		// Leemos el id de la URL que nos manda Python (ej: ?id=user-1234)
+		customerID := r.URL.Query().Get("id")
+
+		// Hacemos una petición GET al nuevo endpoint dinámico de Elixir
+		resp, err := http.Get("http://matching:4000/match/" + customerID)
+		if err != nil {
+			log.Printf("❌ Error al consultar estado en Elixir: %v", err)
+			http.Error(w, "Error contactando al orquestador", http.StatusServiceUnavailable)
+			return
+		}
+		defer resp.Body.Close()
+
+		// Leemos la respuesta
+		body, _ := io.ReadAll(resp.Body)
+
+		// Reenviamos exactamente el código HTTP y el JSON de Elixir a Python
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(resp.StatusCode) // Propagamos 200 (asignado), 202 (sigue en cola) o 404 (no existe)
+		w.Write(body)
+	})
+
+	fmt.Printf("🚀 Ingestion Service (Go) escuchando en el puerto %s...\n", port)
 
 	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatalf("Error al iniciar el servidor: %v", err)

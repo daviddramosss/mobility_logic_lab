@@ -1,46 +1,65 @@
 import requests
 import time
-import json
 import random 
+import threading # Para hilos en segundo plano
 
-# La URL de nuestro punto de entrada (Go)
 URL = "http://localhost:8080/request-ride"
+STATUS_URL = "http://localhost:8080/ride-status" 
 
-print("🚀 Iniciando simulación de tráfico en Mobility-Logic Lab...")
+# Esta función se ejecuta en la sombra y pregunta a Go por un viaje concreto
+def esperar_viaje_en_cola(num_viaje, customer_id):
+    while True:
+        time.sleep(2) # Preguntamos cada 2 segundos
+        try:
+            res = requests.get(f"{STATUS_URL}?id={customer_id}")
+            if res.status_code == 200:
+                data = res.json()
+                print(f"\n🎉 ¡ACTUALIZACIÓN! El Viaje #{num_viaje} acaba de salir de la cola -> {data['driver_id']} ha sido asignado.\n")
+                break # Terminamos el hilo
+            elif res.status_code != 202:
+                break # Si da error o 404, terminamos
+        except:
+            break
+
+print("🚀 Iniciando simulación de tráfico con Polling Asíncrono...")
 print("Presiona Ctrl+C para detener\n")
 
 viajes_realizados = 0
-
 try:
     while True:
         viajes_realizados += 1
         print(f"--- Solicitando Viaje #{viajes_realizados} ---")
         
         try:
-            # Enviamos la petición a Go
             response = requests.post(URL)
+            data = response.json() 
+            estado_viaje = data.get('status')
             
-            if response.status_code == 200:
-                data = response.json()
+            if estado_viaje == "confirmed":
                 precio = data['pricing']['tarifa_final']
                 conductor = data['driver_id']
                 distancia = data['trip_details']['distance_km']
-                demanda = data['trip_details'].get('demand_factor', 'N/A')
-                print(f"✅ ÉXITO: {conductor} asignado | Distancia: {distancia}km | Demanda: {demanda}x | Precio: {precio}€")
+                demanda = data['trip_details'].get('demand_factor', 'N/A') 
+                print(f"✅ ÉXITO: {conductor} asignado | Distancia: {distancia}km | Demanda: {demanda}x | Precio: {precio}")
             
-            elif response.status_code == 202: # Manejamos el caso de que estemos en la cola de Elixir   
-                data = response.json()
+            elif estado_viaje == "queued":
                 posicion = data.get('queue_position', 'Desconocida')
-                print(f"⏳ EN COLA: Conductores ocupados. Tu posición en la espera: {posicion}")
+                customer_id = data.get('customer_id') # Leemos el ID que nos manda Elixir
+                
+                print(f"⏳ EN COLA (Viaje #{viajes_realizados}): Conductores ocupados. Posición: {posicion}")
+                
+                # Lanzamos un hilo asíncrono para que vigile este viaje en concreto
+                if customer_id:
+                    threading.Thread(target=esperar_viaje_en_cola, args=(viajes_realizados, customer_id), daemon=True).start()
+                
             else:
-                print(f"❌ ERROR: El sistema respondió con código {response.status_code}")
+                print(f"❌ ERROR DESCONOCIDO: {data}")
                 
         except Exception as e:
-            print(f"FALLO DE RED: {e}")
+            print(f"FALLO DE PROCESAMIENTO: {e}")
 
-        # Esperamos entre 1 y 3 segundos para estresar al sistema 
+        # ESTRÉS 
         tiempo_espera = random.uniform(1, 3)   
-        print(f"Esperando {tiempo_espera} segundos para la siguiente petición...\n")
         time.sleep(tiempo_espera)
 
 except KeyboardInterrupt:
