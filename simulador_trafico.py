@@ -7,7 +7,7 @@ URL = "http://localhost:8080/request-ride"
 STATUS_URL = "http://localhost:8080/ride-status" 
 
 # Esta función se ejecuta en la sombra y pregunta a Go por un viaje concreto
-def esperar_viaje_en_cola(num_viaje, customer_id):
+def esperar_viaje_en_cola(num_viaje, customer_id): 
     while True:
         time.sleep(2) # Preguntamos cada 2 segundos
         try:

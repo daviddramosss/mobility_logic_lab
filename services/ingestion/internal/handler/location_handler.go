@@ -2,11 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	// Aquí importamos nuestro propio paquete.
-	// Fíjate que usa el nombre del módulo que definimos en go.mod
 	"mobility_logic_lab/ingestion/internal/model"
 )
 
@@ -37,10 +36,18 @@ func HandleLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 4. (Simulación) Aquí en el futuro enviaríamos esto a un broker como Kafka o directamente a Elixir.
-	// Por ahora, simplemente lo imprimimos en la consola del servidor para ver que funciona.
-	fmt.Printf("[INGESTION] Recibida ubicación de %s (ID: %s) -> Lat: %f, Lng: %f\n", loc.Type, loc.ID, loc.Lat, loc.Lng)
-
+	// =========================================================================
+	// TODO (Arquitectura): Integración con Event Broker
+	// =========================================================================
+	// En un entorno de producción masivo, las coordenadas GPS (pings) de
+	// miles de clientes no deben saturar el backend con peticiones HTTP síncronas.
+	// Esta carga útil debería publicarse en un broker de eventos (ej. Apache Kafka
+	// o RabbitMQ) para que servicios de tracking o el Orquestador (Elixir)
+	// las consuman de forma asíncrona (Pub/Sub).
+	//
+	// Para esta PoC, registramos la ingesta en el log de salida estándar.
+	// =========================================================================
+	log.Printf("[INGESTION] 📍 Ubicación recibida | Tipo: %s | ID: %s | Lat: %f, Lng: %f\n", loc.Type, loc.ID, loc.Lat, loc.Lng)
 	// 5. Responder al cliente que todo ha ido bien
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

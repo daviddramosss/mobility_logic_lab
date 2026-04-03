@@ -22,7 +22,9 @@ func main() {
 		log.Println("Go: Solicitud de viaje recibida. Contactando con el Orquestador (Elixir)...")
 
 		// Llamada interna a Elixir usando el nombre del servicio en Docker
-		// No enviamos body por ahora para simplificar, Elixir ya tiene datos simulados
+		// NOTA ARQUITECTÓNICA: En producción, aquí pasaríamos el payload JSON
+		// con las coordenadas GPS (lat/lon) y el user_id que vendrían del cliente móvil.
+		// Para esta PoC, pasamos 'nil' delegando la simulación de datos al Orquestador (Elixir).
 		resp, err := http.Post("http://matching:4000/match", "application/json", nil)
 		if err != nil {
 			log.Printf("❌ Error al contactar con Elixir: %v", err)
